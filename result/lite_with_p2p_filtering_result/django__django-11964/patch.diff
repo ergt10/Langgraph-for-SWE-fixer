@@ -1,0 +1,55 @@
+
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 6957452..dc12a98 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -2,9 +2,11 @@ import collections.abc
+ import copy
+ import datetime
+ import decimal
++import enum
+ import operator
+ import uuid
+ import warnings
++
+ from base64 import b64decode, b64encode
+ from functools import partialmethod, total_ordering
+ 
+
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 6957452..26b178b 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -1008,10 +1008,12 @@ class CharField(Field):
+         return "CharField"
+ 
+     def to_python(self, value):
+-        if isinstance(value, str) or value is None:
++        if isinstance(value, str) or value is None or isinstance(value, enum.Enum):
+             return value
+         return str(value)
+ 
++
++
+     def get_prep_value(self, value):
+         value = super().get_prep_value(value)
+         return self.to_python(value)
+
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 6957452..165b74a 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -1767,11 +1767,12 @@ class IntegerField(Field):
+         return "IntegerField"
+ 
+     def to_python(self, value):
+-        if value is None:
++        if value is None or isinstance(value, enum.Enum):
+             return value
+         try:
+             return int(value)
+         except (TypeError, ValueError):
++
+             raise exceptions.ValidationError(
+                 self.error_messages['invalid'],
+                 code='invalid',

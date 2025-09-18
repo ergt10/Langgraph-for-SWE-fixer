@@ -1,0 +1,18 @@
+
+diff --git a/django/db/models/options.py b/django/db/models/options.py
+index a97487a..52ad05c 100644
+--- a/django/db/models/options.py
++++ b/django/db/models/options.py
+@@ -300,10 +300,11 @@ class Options:
+         Return True if the model can/should be migrated on the `connection`.
+         `connection` can be either a real connection or a connection alias.
+         """
+-        if self.proxy or self.swapped or not self.managed:
++        if self.proxy_for_model is not None or self.swapped or not self.managed:
+             return False
+         if isinstance(connection, str):
+             connection = connections[connection]
++
+         if self.required_db_vendor:
+             return self.required_db_vendor == connection.vendor
+         if self.required_db_features:

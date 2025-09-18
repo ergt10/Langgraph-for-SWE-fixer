@@ -1,0 +1,21 @@
+
+diff --git a/seaborn/_core/scales.py b/seaborn/_core/scales.py
+index 9be3959..2dee6f7 100644
+--- a/seaborn/_core/scales.py
++++ b/seaborn/_core/scales.py
+@@ -347,9 +347,15 @@ class ContinuousBase(Scale):
+             else:
+                 vmin, vmax = new.norm
+             vmin, vmax = axis.convert_units((vmin, vmax))
++            if isinstance(vmin, bool):
++                vmin = int(vmin)
++            if isinstance(vmax, bool):
++                vmax = int(vmax)
+             a = forward(vmin)
+             b = forward(vmax) - forward(vmin)
+ 
++
++
+             def normalize(x):
+                 return (x - a) / b
+ 

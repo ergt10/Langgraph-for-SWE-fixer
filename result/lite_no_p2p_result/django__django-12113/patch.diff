@@ -1,0 +1,20 @@
+
+diff --git a/django/db/backends/base/creation.py b/django/db/backends/base/creation.py
+index 83e6842..28c0344 100644
+--- a/django/db/backends/base/creation.py
++++ b/django/db/backends/base/creation.py
+@@ -55,10 +55,14 @@ class BaseDatabaseCreation:
+         # where the test DB doesn't exist, in which case we need to
+         # create it, then just not destroy it. If we instead skip
+         # this, we will get an exception.
++        old_db_name = self.connection.settings_dict['NAME']
++        if self.connection.get_dsn_parameters()['dbname'] == test_database_name:
++            self.connection.close()
+         self._create_test_db(verbosity, autoclobber, keepdb)
+ 
+         self.connection.close()
+         settings.DATABASES[self.connection.alias]["NAME"] = test_database_name
++
+         self.connection.settings_dict["NAME"] = test_database_name
+ 
+         if self.connection.settings_dict['TEST']['MIGRATE']:

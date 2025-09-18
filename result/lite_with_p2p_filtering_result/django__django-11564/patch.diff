@@ -1,0 +1,19 @@
+
+diff --git a/django/templatetags/static.py b/django/templatetags/static.py
+index f751826..6718043 100644
+--- a/django/templatetags/static.py
++++ b/django/templatetags/static.py
+@@ -100,10 +100,13 @@ class StaticNode(template.Node):
+ 
+     def url(self, context):
+         path = self.path.resolve(context)
++        if 'request' in context and context['request'].META.get('SCRIPT_NAME'):
++            path = '%s%s' % (context['request'].META['SCRIPT_NAME'], path)
+         return self.handle_simple(path)
+ 
+     def render(self, context):
+         url = self.url(context)
++
+         if context.autoescape:
+             url = conditional_escape(url)
+         if self.varname is None:

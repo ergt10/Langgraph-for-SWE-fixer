@@ -1,0 +1,18 @@
+
+diff --git a/sphinx/ext/napoleon/__init__.py b/sphinx/ext/napoleon/__init__.py
+index 7709f34..7c63184 100644
+--- a/sphinx/ext/napoleon/__init__.py
++++ b/sphinx/ext/napoleon/__init__.py
+@@ -324,10 +324,11 @@ def _patch_python_domain() -> None:
+             PyTypedField('keyword', label=_('Keyword Arguments'),
+                          names=('keyword', 'kwarg', 'kwparam'),
+                          typerolename='obj', typenames=('paramtype', 'kwtype'),
+-                         can_collapse=True))
++                         can_collapse=True, unescaped=True))
+ 
+ 
+ def _process_docstring(app: Sphinx, what: str, name: str, obj: Any,
++
+                        options: Any, lines: List[str]) -> None:
+     """Process the docstring for a given python object.
+ 

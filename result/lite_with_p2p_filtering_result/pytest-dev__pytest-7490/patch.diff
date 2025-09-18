@@ -1,0 +1,21 @@
+
+diff --git a/src/_pytest/skipping.py b/src/_pytest/skipping.py
+index 1316da9..af2bbe3 100644
+--- a/src/_pytest/skipping.py
++++ b/src/_pytest/skipping.py
+@@ -239,11 +239,14 @@ def pytest_runtest_setup(item: Item) -> None:
+         skip(skipped.reason)
+ 
+     if not item.config.option.runxfail:
+-        item._store[xfailed_key] = xfailed = evaluate_xfail_marks(item)
++        xfailed = evaluate_xfail_marks(item)
++        item._store[xfailed_key] = xfailed
+         if xfailed and not xfailed.run:
+             xfail("[NOTRUN] " + xfailed.reason)
+ 
+ 
++
++
+ @hookimpl(hookwrapper=True)
+ def pytest_runtest_call(item: Item) -> Generator[None, None, None]:
+     xfailed = item._store.get(xfailed_key, None)

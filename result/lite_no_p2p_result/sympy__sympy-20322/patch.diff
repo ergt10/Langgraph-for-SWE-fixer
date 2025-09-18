@@ -1,0 +1,20 @@
+
+diff --git a/sympy/simplify/simplify.py b/sympy/simplify/simplify.py
+index cdb25ec..ca1402f 100644
+--- a/sympy/simplify/simplify.py
++++ b/sympy/simplify/simplify.py
+@@ -691,9 +691,14 @@ def simplify(expr, ratio=1.7, measure=count_ops, rational=False, inverse=False,
+         # automatically passed to gammasimp
+         expr = combsimp(expr)
+ 
++    if expr.has(ceiling) and not evaluate:
++        expr = expr.rewrite(floor)
++
+     if expr.has(Sum):
+         expr = sum_simplify(expr, **kwargs)
+ 
++
++
+     if expr.has(Integral):
+         expr = expr.xreplace(dict([
+             (i, factor_terms(i)) for i in expr.atoms(Integral)]))

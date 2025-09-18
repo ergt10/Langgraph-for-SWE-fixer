@@ -1,0 +1,21 @@
+
+diff --git a/sympy/core/expr.py b/sympy/core/expr.py
+index 49f8815..7c65b4b 100644
+--- a/sympy/core/expr.py
++++ b/sympy/core/expr.py
+@@ -1006,12 +1006,13 @@ class Expr(Basic, EvalfMixin):
+         for i, g in enumerate(gens):
+             indices[g] = i
+ 
+-        result = []
++        result = [0]*len(terms)
+ 
+-        for term, (coeff, cpart, ncpart) in terms:
++        for i, (term, (coeff, cpart, ncpart)) in enumerate(terms):
+             monom = [0]*k
+ 
+             for base, exp in cpart.items():
++
+                 monom[indices[base]] = exp
+ 
+             result.append((term, (coeff, tuple(monom), ncpart)))

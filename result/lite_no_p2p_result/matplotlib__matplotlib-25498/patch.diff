@@ -1,0 +1,96 @@
+
+diff --git a/lib/matplotlib/colorbar.py b/lib/matplotlib/colorbar.py
+index 6151185..f841fd4 100644
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -507,12 +507,14 @@ class Colorbar:
+         self.mappable = mappable
+         self.set_alpha(mappable.get_alpha())
+         self.cmap = mappable.cmap
++        self._process_values()
+         if mappable.norm != self.norm:
+             self.norm = mappable.norm
+             self._reset_locator_formatter_scale()
+ 
+         self._draw_all()
+         if isinstance(self.mappable, contour.ContourSet):
++
+             CS = self.mappable
+             if not CS.filled:
+                 self.add_lines(CS)
+
+diff --git a/lib/matplotlib/colorbar.py b/lib/matplotlib/colorbar.py
+index 6151185..ac00187 100644
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -518,17 +518,10 @@ class Colorbar:
+                 self.add_lines(CS)
+         self.stale = True
+ 
+-    @_api.deprecated("3.6", alternative="fig.draw_without_rendering()")
+-    def draw_all(self):
+-        """
+-        Calculate any free parameters based on the current cmap and norm,
+-        and do all the drawing.
+-        """
+-        self._draw_all()
+-
+     def _draw_all(self):
+         """
+         Calculate any free parameters based on the current cmap and norm,
++
+         and do all the drawing.
+         """
+         if self.orientation == 'vertical':
+
+diff --git a/lib/matplotlib/colorbar.py b/lib/matplotlib/colorbar.py
+index 6151185..9dc0f63 100644
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -537,19 +537,16 @@ class Colorbar:
+         else:
+             if mpl.rcParams['xtick.minor.visible']:
+                 self.minorticks_on()
++
+         self._long_axis().set(label_position=self.ticklocation,
+                               ticks_position=self.ticklocation)
+         self._short_axis().set_ticks([])
+         self._short_axis().set_ticks([], minor=True)
+ 
+-        # Set self._boundaries and self._values, including extensions.
+-        # self._boundaries are the edges of each square of color, and
+-        # self._values are the value to map into the norm to get the
+-        # color:
+-        self._process_values()
+         # Set self.vmin and self.vmax to first and last boundary, excluding
+         # extensions:
+         self.vmin, self.vmax = self._boundaries[self._inside][[0, -1]]
++
+         # Compute the X/Y mesh.
+         X, Y = self._mesh()
+         # draw the extend triangles, and shrink the inner axes to accommodate.
+
+diff --git a/lib/matplotlib/colorbar.py b/lib/matplotlib/colorbar.py
+index 6151185..a9175ab 100644
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -1164,9 +1164,19 @@ class Colorbar:
+         b = self._boundaries
+         return np.interp(x, np.linspace(0, 1, len(b)), b)
+ 
++    @_api.deprecated("3.6", alternative="Colorbar.update_normal()")
++    def update_bruteforce(self, mappable):
++        """
++        Update the colorbar to match the mappable's properties.
++
++        This is a deprecated alias for `Colorbar.update_normal`.
++        """
++        self.update_normal(mappable)
++
+     def _reset_locator_formatter_scale(self):
+         """
+         Reset the locator et al to defaults.  Any user-hardcoded changes
++
+         need to be re-entered if this gets called (either at init, or when
+         the mappable normal gets changed: Colorbar.update_normal)
+         """

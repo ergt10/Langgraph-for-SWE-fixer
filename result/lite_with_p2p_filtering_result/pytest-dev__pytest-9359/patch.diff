@@ -1,0 +1,18 @@
+
+diff --git a/src/_pytest/_code/code.py b/src/_pytest/_code/code.py
+index 3ff802f..527cee4 100644
+--- a/src/_pytest/_code/code.py
++++ b/src/_pytest/_code/code.py
+@@ -254,10 +254,11 @@ class TracebackEntry:
+             key = self.frame.code.path
+             if key is not None:
+                 astnode = astcache.get(key, None)
+-        start = self.getfirstlinesource()
++        start = self.lineno
+         try:
+             astnode, _, end = getstatementrange_ast(
+                 self.lineno, source, astnode=astnode
++
+             )
+         except SyntaxError:
+             end = self.lineno + 1

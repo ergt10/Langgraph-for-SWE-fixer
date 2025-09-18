@@ -1,0 +1,45 @@
+
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 1225939..3455af8 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1329,16 +1329,8 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
+             self.add_line('   :async:', sourcename)
+ 
+     def format_signature(self, **kwargs: Any) -> str:
+-        sigs = []
+-        if (self.analyzer and
+-                '.'.join(self.objpath) in self.analyzer.overloads and
+-                self.config.autodoc_typehints == 'signature'):
+-            # Use signatures for overloaded functions instead of the implementation function.
+-            overloaded = True
+-        else:
+-            overloaded = False
+-            sig = super().format_signature(**kwargs)
+-            sigs.append(sig)
++        sig = super().format_signature(**kwargs)
++        sigs = [sig]
+ 
+         if inspect.is_singledispatch_function(self.object):
+             # append signature of singledispatch'ed functions
+@@ -1352,19 +1344,12 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
+                     documenter.object = func
+                     documenter.objpath = [None]
+                     sigs.append(documenter.format_signature())
+-        if overloaded:
+-            __globals__ = safe_getattr(self.object, '__globals__', {})
+-            for overload in self.analyzer.overloads.get('.'.join(self.objpath)):
+-                overload = evaluate_signature(overload, __globals__,
+-                                              self.config.autodoc_type_aliases)
+-
+-                sig = stringify_signature(overload, **kwargs)
+-                sigs.append(sig)
+ 
+         return "\n".join(sigs)
+ 
+     def annotate_to_first_argument(self, func: Callable, typ: Type) -> None:
+         """Annotate type hint to the first argument of function if needed."""
++
+         try:
+             sig = inspect.signature(func, type_aliases=self.config.autodoc_type_aliases)
+         except TypeError as exc:

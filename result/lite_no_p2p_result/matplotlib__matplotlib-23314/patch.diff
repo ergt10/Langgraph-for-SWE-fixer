@@ -1,0 +1,20 @@
+
+diff --git a/lib/mpl_toolkits/mplot3d/axes3d.py b/lib/mpl_toolkits/mplot3d/axes3d.py
+index 392f89b..238b9a8 100644
+--- a/lib/mpl_toolkits/mplot3d/axes3d.py
++++ b/lib/mpl_toolkits/mplot3d/axes3d.py
+@@ -389,10 +389,14 @@ class Axes3D(Axes):
+     def draw(self, renderer):
+         self._unstale_viewLim()
+ 
++        if not self.get_visible():
++            return
++
+         # draw the background patch
+         self.patch.draw(renderer)
+         self._frameon = False
+ 
++
+         # first, set the aspect
+         # this is duplicated from `axes._base._AxesBase.draw`
+         # but must be called before any of the artist are drawn as

@@ -1,0 +1,43 @@
+
+diff --git a/django/db/models/base.py b/django/db/models/base.py
+index 7ba849d..5e7b41f 100644
+--- a/django/db/models/base.py
++++ b/django/db/models/base.py
+@@ -1429,9 +1429,37 @@ class Model(metaclass=ModelBase):
+         used_column_names = []
+         errors = []
+ 
++        # Gather models that are allowed to be migrated to the same db as cls.
++        models = [
++            model
++            for model in apps.get_models()
++            if router.allow_migrate_model(DEFAULT_DB_ALIAS, cls)
++            == router.allow_migrate_model(DEFAULT_DB_ALIAS, model)
++        ]
++
++        # Check if db_table name clashes with another model.
++        db_table = cls._meta.db_table
++        if db_table:
++            conflicting_models = [
++                model for model in models
++                if model._meta.db_table == db_table and model._meta.label != cls._meta.label
++            ]
++            if conflicting_models:
++                errors.append(
++                    checks.Error(
++                        "The model's db_table name '%s' clashes with %s db_table name." % (
++                            db_table, conflicting_models[0]._meta.label
++                        ),
++                        obj=cls,
++                        id='models.E028',
++                    )
++                )
++
+         for f in cls._meta.local_fields:
+             _, column_name = f.get_attname_column()
+ 
++
++
+             # Ensure the column name is not already in use.
+             if column_name and column_name in used_column_names:
+                 errors.append(

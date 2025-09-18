@@ -1,0 +1,19 @@
+
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index a0e3523..a060743 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -751,10 +751,12 @@ class LatexPrinter(Printer):
+                     o1.append(' - ' + k._latex_form)
+                 else:
+                     arg_str = '(' + self._print(v) + ')'
+-                    o1.append(' + ' + arg_str + k._latex_form)
++                    o1.append(arg_str)
++                    o1.append(k._latex_form)
+ 
+         outstr = (''.join(o1))
+         if outstr[1] != '-':
++
+             outstr = outstr[3:]
+         else:
+             outstr = outstr[1:]

@@ -1,0 +1,44 @@
+
+diff --git a/django/db/models/enums.py b/django/db/models/enums.py
+index 2924da3..5b2c192 100644
+--- a/django/db/models/enums.py
++++ b/django/db/models/enums.py
+@@ -1,10 +1,10 @@
+ import enum
+ 
+-from django.utils.functional import Promise
+-
+ __all__ = ['Choices', 'IntegerChoices', 'TextChoices']
+ 
+ 
++
++
+ class ChoicesMeta(enum.EnumMeta):
+     """A metaclass for creating a enum choices."""
+ 
+
+diff --git a/django/db/models/enums.py b/django/db/models/enums.py
+index 2924da3..bcb0676 100644
+--- a/django/db/models/enums.py
++++ b/django/db/models/enums.py
+@@ -12,11 +12,7 @@ class ChoicesMeta(enum.EnumMeta):
+         labels = []
+         for key in classdict._member_names:
+             value = classdict[key]
+-            if (
+-                isinstance(value, (list, tuple)) and
+-                len(value) > 1 and
+-                isinstance(value[-1], (Promise, str))
+-            ):
++            if isinstance(value, (list, tuple)):
+                 *value, label = value
+                 value = tuple(value)
+             else:
+@@ -34,6 +30,7 @@ class ChoicesMeta(enum.EnumMeta):
+         return enum.unique(cls)
+ 
+     def __contains__(cls, member):
++
+         if not isinstance(member, enum.Enum):
+             # Allow non-enums to match against member values.
+             return member in {x.value for x in cls}

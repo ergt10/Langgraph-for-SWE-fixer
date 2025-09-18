@@ -1,0 +1,21 @@
+
+diff --git a/sympy/utilities/iterables.py b/sympy/utilities/iterables.py
+index aef37ab..9e54f24 100644
+--- a/sympy/utilities/iterables.py
++++ b/sympy/utilities/iterables.py
+@@ -1842,12 +1842,13 @@ def partitions(n, m=None, k=None, size=False):
+             break
+         room -= need
+         if size:
+-            yield sum(ms.values()), ms
++            yield sum(ms.values()), ms.copy()
+         else:
+-            yield ms
++            yield ms.copy()
+ 
+ 
+ def ordered_partitions(n, m=None, sort=True):
++
+     """Generates ordered partitions of integer ``n``.
+ 
+     Parameters

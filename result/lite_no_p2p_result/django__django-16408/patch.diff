@@ -1,0 +1,18 @@
+
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 83f3a12..48aa3b5 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -1812,10 +1812,11 @@ class Query(BaseExpression):
+         # joins at this stage - we will need the information about join type
+         # of the trimmed joins.
+         for join in path:
+-            if join.filtered_relation:
++            if join.filtered_relation and join.filtered_relation.path:
+                 filtered_relation = join.filtered_relation.clone()
+                 table_alias = filtered_relation.alias
+             else:
++
+                 filtered_relation = None
+                 table_alias = None
+             opts = join.to_opts

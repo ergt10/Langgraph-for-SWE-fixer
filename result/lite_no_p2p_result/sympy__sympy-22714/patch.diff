@@ -1,0 +1,34 @@
+
+diff --git a/sympy/parsing/sympy_parser.py b/sympy/parsing/sympy_parser.py
+index c16ec77..8428070 100644
+--- a/sympy/parsing/sympy_parser.py
++++ b/sympy/parsing/sympy_parser.py
+@@ -1203,9 +1203,28 @@ class EvaluateFalseTransformer(ast.NodeTransformer):
+         new_node = self.generic_visit(node)
+         if isinstance(node.func, ast.Name) and node.func.id in self.functions:
+             new_node.keywords.append(ast.keyword(arg='evaluate', value=ast.NameConstant(value=False, ctx=ast.Load())))
++            if node.func.id in ('im', 're'):
++                new_node.args = [ast.Call(
++                    func=ast.Name(id='Mul', ctx=ast.Load()),
++                    args=[
++                        ast.Call(
++                            func=ast.Name(id='Pow', ctx=ast.Load()),
++                            args=[
++                                ast.Name(id='I', ctx=ast.Load()),
++                                ast.Num(n=-1)
++                            ],
++                            keywords=[ast.keyword(arg='evaluate', value=ast.NameConstant(value=False, ctx=ast.Load()))],
++                        ),
++                        new_node.args[0],
++                    ],
++                    keywords=[ast.keyword(arg='evaluate', value=ast.NameConstant(value=False, ctx=ast.Load()))],
++                )]
+         return new_node
+ 
+ 
++
++
++
+ _transformation = {  # items can be added but never re-ordered
+ 0: lambda_notation,
+ 1: auto_symbol,

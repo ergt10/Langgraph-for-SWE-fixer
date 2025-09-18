@@ -1,0 +1,39 @@
+
+diff --git a/sympy/core/kind.py b/sympy/core/kind.py
+index a8d129b..c717f34 100644
+--- a/sympy/core/kind.py
++++ b/sympy/core/kind.py
+@@ -25,10 +25,11 @@ This module defines basic kinds for core objects. Other kinds such as
+        See https://github.com/sympy/sympy/pull/20549.
+ """
+ 
+-from collections import defaultdict
++from collections import defaultdict, OrderedDict
+ 
+ from sympy.core.cache import cacheit
+ from sympy.multipledispatch.dispatcher import (Dispatcher,
++
+     ambiguity_warn, ambiguity_register_error_ignore_dup,
+     str_signature, RaiseNotImplementedError)
+ 
+
+diff --git a/sympy/core/kind.py b/sympy/core/kind.py
+index a8d129b..8774c09 100644
+--- a/sympy/core/kind.py
++++ b/sympy/core/kind.py
+@@ -293,10 +293,14 @@ class KindDispatcher:
+ 
+     def __call__(self, *args, **kwargs):
+         if self.commutative:
+-            kinds = frozenset(args)
++            kinds = OrderedDict()
++            for a in args:
++                kinds[a] = None
++            kinds = frozenset(kinds)
+         else:
+             kinds = []
+             prev = None
++
+             for a in args:
+                 if prev is not a:
+                     kinds.append(a)

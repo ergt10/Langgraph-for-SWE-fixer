@@ -1,0 +1,22 @@
+
+diff --git a/django/db/models/base.py b/django/db/models/base.py
+index 92b9b8f..9f2c5b1 100644
+--- a/django/db/models/base.py
++++ b/django/db/models/base.py
+@@ -916,10 +916,15 @@ class Model(metaclass=ModelBase):
+ 
+         collector = Collector(using=using)
+         collector.collect([self], keep_parents=keep_parents)
+-        return collector.delete()
++        result = collector.delete()
++        # Clear the pk so that the model instance can be reused.
++        self.pk = None
++        return result
+ 
+     delete.alters_data = True
+ 
++
++
+     def _get_FIELD_display(self, field):
+         value = getattr(self, field.attname)
+         # force_str() to coerce lazy strings.

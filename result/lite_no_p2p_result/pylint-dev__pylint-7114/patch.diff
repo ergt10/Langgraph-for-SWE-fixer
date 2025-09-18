@@ -1,0 +1,41 @@
+
+diff --git a/pylint/lint/pylinter.py b/pylint/lint/pylinter.py
+index 6517a9e..48f630a 100644
+--- a/pylint/lint/pylinter.py
++++ b/pylint/lint/pylinter.py
+@@ -588,12 +588,11 @@ class PyLinter(
+         Returns iterator of paths to discovered modules and packages.
+         """
+         for something in files_or_modules:
+-            if os.path.isdir(something) and not os.path.isfile(
+-                os.path.join(something, "__init__.py")
+-            ):
++            if os.path.isdir(something):
+                 skip_subtrees: list[str] = []
+                 for root, _, files in os.walk(something):
+                     if any(root.startswith(s) for s in skip_subtrees):
++
+                         # Skip subtree of already discovered package.
+                         continue
+ 
+
+diff --git a/pylint/lint/pylinter.py b/pylint/lint/pylinter.py
+index 6517a9e..671a3ad 100644
+--- a/pylint/lint/pylinter.py
++++ b/pylint/lint/pylinter.py
+@@ -606,10 +606,14 @@ class PyLinter(
+                         skip_subtrees.append(root)
+                         continue
+ 
+-                    if "__init__.py" in files:
++                    if (
++                        "__init__.py" in files
++                        or os.path.basename(root) + ".py" in files
++                    ):
+                         skip_subtrees.append(root)
+                         yield root
+                     else:
++
+                         yield from (
+                             os.path.join(root, file)
+                             for file in files

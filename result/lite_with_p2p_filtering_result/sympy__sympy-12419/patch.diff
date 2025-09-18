@@ -1,0 +1,22 @@
+
+diff --git a/sympy/matrices/matrices.py b/sympy/matrices/matrices.py
+index b7978a4..0224136 100644
+--- a/sympy/matrices/matrices.py
++++ b/sympy/matrices/matrices.py
+@@ -1164,11 +1164,15 @@ class MatrixOperations(MatrixRequired):
+     def _eval_as_real_imag(self):
+         from sympy.functions.elementary.complexes import re, im
+ 
+-        return (self.applyfunc(re), self.applyfunc(im))
++        from sympy import Piecewise
++
++        return (Piecewise((self.applyfunc(re), self.rows), (self, True)),
++                Piecewise((self.applyfunc(im), self.rows), (self, True)))
+ 
+     def _eval_conjugate(self):
+         return self.applyfunc(lambda x: x.conjugate())
+ 
++
+     def _eval_trace(self):
+         return sum(self[i, i] for i in range(self.rows))
+ 

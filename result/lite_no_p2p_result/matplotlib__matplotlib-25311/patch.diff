@@ -1,0 +1,24 @@
+
+diff --git a/lib/matplotlib/legend.py b/lib/matplotlib/legend.py
+index a038473..581585b 100644
+--- a/lib/matplotlib/legend.py
++++ b/lib/matplotlib/legend.py
+@@ -74,13 +74,16 @@ class DraggableLegend(DraggableOffsetBox):
+         super().__init__(legend, legend._legend_box, use_blit=use_blit)
+ 
+     def finalize_offset(self):
++        # Do not call self._update_loc/_bbox_to_anchor, as this would
++        # require access to the figure's canvas, which is not picklable.
+         if self._update == "loc":
+-            self._update_loc(self.get_loc_in_canvas())
++            self.legend._loc = self.get_loc_in_canvas()
+         elif self._update == "bbox":
+-            self._bbox_to_anchor(self.get_loc_in_canvas())
++            self.legend.set_bbox_to_anchor(self.get_loc_in_canvas())
+ 
+     def _update_loc(self, loc_in_canvas):
+         bbox = self.legend.get_bbox_to_anchor()
++
+         # if bbox has zero width or height, the transformation is
+         # ill-defined. Fall back to the default bbox_to_anchor.
+         if bbox.width == 0 or bbox.height == 0:

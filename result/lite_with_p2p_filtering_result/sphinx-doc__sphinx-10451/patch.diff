@@ -1,0 +1,21 @@
+
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index d42883b..07dd04c 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -494,9 +494,15 @@ class Documenter:
+                                self.fullname, exc, type='autodoc')
+                 args = None
+ 
++        if args is None:
++            args = ''
++        if retann is None:
++            retann = ''
++
+         result = self.env.events.emit_firstresult('autodoc-process-signature',
+                                                   self.objtype, self.fullname,
+                                                   self.object, self.options, args, retann)
++
+         if result:
+             args, retann = result
+ 

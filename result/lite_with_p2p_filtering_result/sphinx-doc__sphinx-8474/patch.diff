@@ -1,0 +1,100 @@
+
+diff --git a/sphinx/writers/html.py b/sphinx/writers/html.py
+index 30db1c2..170a043 100644
+--- a/sphinx/writers/html.py
++++ b/sphinx/writers/html.py
+@@ -324,16 +324,22 @@ class HTMLTranslator(SphinxTranslator, BaseTranslator):
+                     self.body.append(prefix % '.'.join(map(str, numbers)) + ' ')
+                     self.body.append('</span>')
+ 
+-        figtype = self.builder.env.domains['std'].get_enumerable_node_type(node)
+-        if figtype:
+-            if len(node['ids']) == 0:
+-                msg = __('Any IDs not assigned for %s node') % node.tagname
+-                logger.warning(msg, location=node)
+-            else:
+-                append_fignumber(figtype, node['ids'][0])
++        if isinstance(node, nodes.figure):
++            figtype = 'figure'
++        elif isinstance(node, nodes.table):
++            figtype = 'table'
++        else:
++            return
++
++        if len(node['ids']) == 0:
++            msg = __('Any IDs not assigned for %s node') % node.tagname
++            logger.warning(msg, location=node)
++        else:
++            append_fignumber(figtype, node['ids'][0])
+ 
+     def add_permalink_ref(self, node: Element, title: str) -> None:
+         if node['ids'] and self.permalink_text and self.builder.add_permalinks:
++
+             format = '<a class="headerlink" href="#%s" title="%s">%s</a>'
+             self.body.append(format % (node['ids'][0], title, self.permalink_text))
+ 
+
+diff --git a/sphinx/writers/latex.py b/sphinx/writers/latex.py
+index 7c85305..83c6b4c 100644
+--- a/sphinx/writers/latex.py
++++ b/sphinx/writers/latex.py
+@@ -877,9 +877,12 @@ class LaTeXTranslator(SphinxTranslator):
+                                ':widths: is ignored.'), location=node)
+         self.next_table_colspec = None
+ 
++        self.add_fignumber(node)
++
+     def depart_table(self, node: Element) -> None:
+         labels = self.hypertarget_to(node)
+         table_type = self.table.get_table_type()
++
+         table = self.render(table_type + '.tex_t',
+                             dict(table=self.table, labels=labels))
+         self.body.append("\n\n")
+
+diff --git a/sphinx/writers/latex.py b/sphinx/writers/latex.py
+index 7c85305..8610fe1 100644
+--- a/sphinx/writers/latex.py
++++ b/sphinx/writers/latex.py
+@@ -1327,9 +1327,41 @@ class LaTeXTranslator(SphinxTranslator):
+     def depart_figure(self, node: Element) -> None:
+         self.body.append(self.context.pop())
+ 
++    def add_fignumber(self, node: Element) -> None:
++        def append_fignumber(figtype: str, figure_id: str) -> None:
++            if self.builder.name == 'singlehtml':
++                key = "%s/%s" % (self.docnames[-1], figtype)
++            else:
++                key = figtype
++
++            if figure_id in self.builder.fignumbers.get(key, {}):
++                self.body.append('{\\sphinxfigref{')
++                prefix = self.builder.config.numfig_format.get(figtype)
++                if prefix is None:
++                    msg = __('numfig_format is not defined for %s') % figtype
++                    logger.warning(msg)
++                else:
++                    numbers = self.builder.fignumbers[key][figure_id]
++                    self.body.append(prefix % '.'.join(map(str, numbers)) + ' ')
++                    self.body.append('}}')
++
++        if isinstance(node, nodes.figure):
++            figtype = 'figure'
++        elif isinstance(node, nodes.table):
++            figtype = 'table'
++        else:
++            return
++
++        if len(node['ids']) == 0:
++            msg = __('Any IDs not assigned for %s node') % node.tagname
++            logger.warning(msg, location=node)
++        else:
++            append_fignumber(figtype, node['ids'][0])
++
+     def visit_caption(self, node: Element) -> None:
+         self.in_caption += 1
+         if isinstance(node.parent, captioned_literal_block):
++
+             self.body.append('\\sphinxSetupCaptionForVerbatim{')
+         elif self.in_minipage and isinstance(node.parent, nodes.figure):
+             self.body.append('\\captionof{figure}{')

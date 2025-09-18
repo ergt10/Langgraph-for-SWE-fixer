@@ -1,0 +1,21 @@
+
+diff --git a/requests/sessions.py b/requests/sessions.py
+index 7fdc4a9..9d80f99 100644
+--- a/requests/sessions.py
++++ b/requests/sessions.py
+@@ -99,10 +99,14 @@ class SessionRedirectMixin(object):
+             resp.close()
+ 
+             url = resp.headers['location']
+-            method = req.method
++
++            # If we don't have a method already, get it from the original request.
++            if prepared_request.method == req.method:
++                method = req.method
+ 
+             # Handle redirection without scheme (see: RFC 1808 Section 4)
+             if url.startswith('//'):
++
+                 parsed_rurl = urlparse(resp.url)
+                 url = '%s:%s' % (parsed_rurl.scheme, url)
+ 

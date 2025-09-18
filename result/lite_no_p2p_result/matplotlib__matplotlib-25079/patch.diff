@@ -1,0 +1,19 @@
+
+diff --git a/lib/matplotlib/image.py b/lib/matplotlib/image.py
+index 36a3ad0..add9a49 100644
+--- a/lib/matplotlib/image.py
++++ b/lib/matplotlib/image.py
+@@ -448,10 +448,12 @@ class _ImageBase(martist.Artist, cm.ScalarMappable):
+                 # for big numbers at the edge of float64's ability to represent
+                 # changes.  Applying a norm first would be good, but ruins the
+                 # interpolation of over numbers.
+-                self.norm.autoscale_None(A)
++                with self.norm.callbacks.blocked():
++                    self.norm.autoscale_None(A)
+                 dv = np.float64(self.norm.vmax) - np.float64(self.norm.vmin)
+                 vmid = np.float64(self.norm.vmin) + dv / 2
+                 fact = 1e7 if scaled_dtype == np.float64 else 1e4
++
+                 newmin = vmid - dv * fact
+                 if newmin < a_min:
+                     newmin = None

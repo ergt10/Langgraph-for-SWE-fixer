@@ -1,0 +1,20 @@
+
+diff --git a/django/contrib/admin/utils.py b/django/contrib/admin/utils.py
+index 07cdaa5..91f36ff 100644
+--- a/django/contrib/admin/utils.py
++++ b/django/contrib/admin/utils.py
+@@ -398,10 +398,14 @@ def display_for_field(value, field, empty_value_display):
+         return formats.number_format(value)
+     elif isinstance(field, models.FileField) and value:
+         return format_html('<a href="{}">{}</a>', value.url, value)
++    elif isinstance(field, models.JSONField):
++        return field.prepare_value(value)
+     else:
+         return display_for_value(value, empty_value_display)
+ 
+ 
++
++
+ def display_for_value(value, empty_value_display, boolean=False):
+     from django.contrib.admin.templatetags.admin_list import _boolean_icon
+ 

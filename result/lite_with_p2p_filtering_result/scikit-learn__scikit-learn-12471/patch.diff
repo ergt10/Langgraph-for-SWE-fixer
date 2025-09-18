@@ -1,0 +1,17 @@
+
+diff --git a/sklearn/preprocessing/_encoders.py b/sklearn/preprocessing/_encoders.py
+index 80fea06..610c52e 100644
+--- a/sklearn/preprocessing/_encoders.py
++++ b/sklearn/preprocessing/_encoders.py
+@@ -563,9 +563,11 @@ class OneHotEncoder(_BaseEncoder):
+         n_samples, n_features = X.shape
+ 
+         X_int, X_mask = self._transform(X, handle_unknown=self.handle_unknown)
++        X_int = X_int.astype(np.int, copy=False)
+ 
+         mask = X_mask.ravel()
+         n_values = [cats.shape[0] for cats in self.categories_]
++
+         n_values = np.array([0] + n_values)
+         feature_indices = np.cumsum(n_values)
+ 

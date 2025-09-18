@@ -1,0 +1,18 @@
+
+diff --git a/sphinx/environment/adapters/indexentries.py b/sphinx/environment/adapters/indexentries.py
+index 44ea73a..d348500 100644
+--- a/sphinx/environment/adapters/indexentries.py
++++ b/sphinx/environment/adapters/indexentries.py
+@@ -108,10 +108,11 @@ class IndexEntries:
+             lckey = unicodedata.normalize('NFD', key.lower())
+             if lckey.startswith('\N{RIGHT-TO-LEFT MARK}'):
+                 lckey = lckey[1:]
+-            if lckey[0:1].isalpha() or lckey.startswith('_'):
++            if not lckey[0:1].isdigit() and unicodedata.category(lckey[0:1])[0] != 'S':
+                 lckey = chr(127) + lckey
+             # ensure a determinstic order *within* letters by also sorting on
+             # the entry itself
++
+             return (lckey, entry[0])
+         newlist = sorted(new.items(), key=keyfunc)
+ 

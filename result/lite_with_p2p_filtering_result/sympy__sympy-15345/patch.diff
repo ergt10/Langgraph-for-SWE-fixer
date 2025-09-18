@@ -1,0 +1,18 @@
+
+diff --git a/sympy/printing/mathematica.py b/sympy/printing/mathematica.py
+index 7ecda40..302b7ab 100644
+--- a/sympy/printing/mathematica.py
++++ b/sympy/printing/mathematica.py
+@@ -13,9 +13,12 @@ known_functions = {
+     "log": [(lambda x: True, "Log")],
+     "sin": [(lambda x: True, "Sin")],
+     "cos": [(lambda x: True, "Cos")],
++    "Max": [(lambda x: True, "Max")],
++    "Min": [(lambda x: True, "Min")],
+     "tan": [(lambda x: True, "Tan")],
+     "cot": [(lambda x: True, "Cot")],
+     "asin": [(lambda x: True, "ArcSin")],
++
+     "acos": [(lambda x: True, "ArcCos")],
+     "atan": [(lambda x: True, "ArcTan")],
+     "sinh": [(lambda x: True, "Sinh")],

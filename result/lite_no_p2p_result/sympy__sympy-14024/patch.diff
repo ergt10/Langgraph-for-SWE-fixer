@@ -1,0 +1,19 @@
+
+diff --git a/sympy/core/expr.py b/sympy/core/expr.py
+index ba57ca7..d74fbe0 100644
+--- a/sympy/core/expr.py
++++ b/sympy/core/expr.py
+@@ -624,10 +624,12 @@ class Expr(Basic, EvalfMixin):
+             if simplify:
+                 deriv = deriv.simplify()
+             if deriv != 0:
+-                if not (pure_complex(deriv, or_real=True)):
++                if not (pure_complex(deriv, or_real=True) or
++                        (deriv.is_Pow and deriv.base.is_negative)):
+                     if flags.get('failing_number', False):
+                         return failing_number
+                     elif deriv.free_symbols:
++
+                         # dead line provided _random returns None in such cases
+                         return None
+                 return False

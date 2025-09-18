@@ -1,0 +1,58 @@
+
+diff --git a/src/_pytest/junitxml.py b/src/_pytest/junitxml.py
+index 092ef97..015635b 100644
+--- a/src/_pytest/junitxml.py
++++ b/src/_pytest/junitxml.py
+@@ -13,9 +13,12 @@ import os
+ import re
+ import sys
+ import time
++import socket
+ 
+ import py
+ 
++
++
+ import pytest
+ from _pytest import nodes
+ from _pytest.config import filename_arg
+
+diff --git a/src/_pytest/junitxml.py b/src/_pytest/junitxml.py
+index 092ef97..e9ffec5 100644
+--- a/src/_pytest/junitxml.py
++++ b/src/_pytest/junitxml.py
+@@ -657,9 +657,15 @@ class LogXML:
+         )
+         logfile.write('<?xml version="1.0" encoding="utf-8"?>')
+ 
++        timestamp = time.strftime(
++            "%Y-%m-%dT%H:%M:%S", time.localtime(self.suite_start_time)
++        )
++        hostname = socket.gethostname()
++
+         suite_node = Junit.testsuite(
+             self._get_global_properties_node(),
+             [x.to_xml() for x in self.node_reporters_ordered],
++
+             name=self.suite_name,
+             errors=self.stats["error"],
+             failures=self.stats["failure"],
+
+diff --git a/src/_pytest/junitxml.py b/src/_pytest/junitxml.py
+index 092ef97..8233e5e 100644
+--- a/src/_pytest/junitxml.py
++++ b/src/_pytest/junitxml.py
+@@ -666,10 +666,13 @@ class LogXML:
+             skipped=self.stats["skipped"],
+             tests=numtests,
+             time="%.3f" % suite_time_delta,
++            timestamp=timestamp,
++            hostname=hostname,
+         )
+         logfile.write(Junit.testsuites([suite_node]).unicode(indent=0))
+         logfile.close()
+ 
++
+     def pytest_terminal_summary(self, terminalreporter):
+         terminalreporter.write_sep("-", "generated xml file: %s" % (self.logfile))
+ 

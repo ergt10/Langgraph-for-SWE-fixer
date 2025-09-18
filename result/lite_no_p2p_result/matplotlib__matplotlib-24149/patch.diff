@@ -1,0 +1,24 @@
+
+diff --git a/lib/matplotlib/axes/_axes.py b/lib/matplotlib/axes/_axes.py
+index 5af9d96..54201ee 100644
+--- a/lib/matplotlib/axes/_axes.py
++++ b/lib/matplotlib/axes/_axes.py
+@@ -4088,11 +4088,18 @@ class Axes(_AxesBase):
+         means = []
+         fliers = []
+ 
++        def _preprocess_data(*args, **kwargs):
++            # Disable the NaN->array conversion so that the bar plot
++            # can raise rather than returning an empty plot.
++            kwargs["allow_nan"] = False
++            return _preprocess_data(*args, **kwargs)
++
+         # empty list of xticklabels
+         datalabels = []
+ 
+         # Use default zorder if none specified
+         if zorder is None:
++
+             zorder = mlines.Line2D.zorder
+ 
+         zdelta = 0.1

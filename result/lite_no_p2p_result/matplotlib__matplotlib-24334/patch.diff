@@ -1,0 +1,19 @@
+
+diff --git a/lib/matplotlib/axis.py b/lib/matplotlib/axis.py
+index d63d9ca..424a5c9 100644
+--- a/lib/matplotlib/axis.py
++++ b/lib/matplotlib/axis.py
+@@ -2024,9 +2024,13 @@ class Axis(martist.Artist):
+         result = self._set_tick_locations(ticks, minor=minor)
+         if labels is not None:
+             self.set_ticklabels(labels, minor=minor, **kwargs)
++        elif kwargs:
++            raise ValueError(
++                "Keyword arguments are only supported if labels are set.")
+         return result
+ 
+     def _get_tick_boxes_siblings(self, renderer):
++
+         """
+         Get the bounding boxes for this `.axis` and its siblings
+         as set by `.Figure.align_xlabels` or  `.Figure.align_ylabels`.

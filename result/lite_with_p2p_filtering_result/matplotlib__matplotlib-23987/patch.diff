@@ -1,0 +1,19 @@
+
+diff --git a/lib/matplotlib/figure.py b/lib/matplotlib/figure.py
+index 71845c8..e4c559b 100644
+--- a/lib/matplotlib/figure.py
++++ b/lib/matplotlib/figure.py
+@@ -1309,11 +1309,12 @@ default: %(va)s
+             The height of the padding between subplots,
+             as a fraction of the average Axes height.
+         """
+-        if (self.get_layout_engine() is not None and
++        if (isinstance(self.get_layout_engine(), ConstrainedLayoutEngine) and
+                 not self.get_layout_engine().adjust_compatible):
+             _api.warn_external(
+                 "This figure was using a layout engine that is "
+                 "incompatible with subplots_adjust and/or tight_layout; "
++
+                 "not calling subplots_adjust.")
+             return
+         self.subplotpars.update(left, bottom, right, top, wspace, hspace)

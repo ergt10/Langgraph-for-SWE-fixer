@@ -1,0 +1,46 @@
+
+diff --git a/django/utils/autoreload.py b/django/utils/autoreload.py
+index dcf3cdd..b5393a5 100644
+--- a/django/utils/autoreload.py
++++ b/django/utils/autoreload.py
+@@ -11,9 +11,12 @@ import traceback
+ import weakref
+ from collections import defaultdict
+ from pathlib import Path
++import sysconfig
+ from types import ModuleType
+ from zipimport import zipimporter
+ 
++
++
+ import django
+ from django.apps import apps
+ from django.core.signals import request_finished
+
+diff --git a/django/utils/autoreload.py b/django/utils/autoreload.py
+index dcf3cdd..aff7cb0 100644
+--- a/django/utils/autoreload.py
++++ b/django/utils/autoreload.py
+@@ -290,13 +290,19 @@ class BaseReloader:
+     def watched_files(self, include_globs=True):
+         """
+         Yield all files that need to be watched, including module files and
+-        files within globs.
++        files within globs. Exclude files that are part of the Python standard
++        library or third-party packages.
+         """
+-        yield from iter_all_python_module_files()
+-        yield from self.extra_files
++        stdlib = Path(sys.base_exec_prefix).parent / 'lib'
++        site_packages = Path(sysconfig.get_path('purelib'))
++        for file in itertools.chain(iter_all_python_module_files(), self.extra_files):
++            if file.parent.resolve() in (stdlib, site_packages):
++                continue
++            yield file
+         if include_globs:
+             for directory, patterns in self.directory_globs.items():
+                 for pattern in patterns:
++
+                     yield from directory.glob(pattern)
+ 
+     def wait_for_apps_ready(self, app_reg, django_main_thread):

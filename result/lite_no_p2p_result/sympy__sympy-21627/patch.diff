@@ -1,0 +1,20 @@
+
+diff --git a/sympy/core/expr.py b/sympy/core/expr.py
+index 5ac08be..de4c54e 100644
+--- a/sympy/core/expr.py
++++ b/sympy/core/expr.py
+@@ -896,10 +896,13 @@ class Expr(Basic, EvalfMixin):
+             if not (i.is_Number and r.is_Number):
+                 return False
+             if r._prec != 1 and i._prec != 1:
+-                return bool(not i and ((r > 0) if positive else (r < 0)))
++                if i:
++                    return False
++                return (r > 0) if positive else (r < 0)
+             elif r._prec == 1 and (not i or i._prec == 1) and \
+                     self.is_algebraic and not self.has(Function):
+                 try:
++
+                     if minimal_polynomial(self).is_Symbol:
+                         return False
+                 except (NotAlgebraic, NotImplementedError):

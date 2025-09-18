@@ -1,0 +1,19 @@
+
+diff --git a/sympy/simplify/hyperexpand.py b/sympy/simplify/hyperexpand.py
+index dfabcf7..3d1b2a5 100644
+--- a/sympy/simplify/hyperexpand.py
++++ b/sympy/simplify/hyperexpand.py
+@@ -1763,10 +1763,12 @@ def try_lerchphi(func):
+     # We assemble two structures: a list monomials of pairs (a, b) representing
+     # a*t**b (b a non-negative integer), and a dict terms, where
+     # terms[a] = [(b, c)] means that there is a term b/(t-a)**c.
+-    part = apart(numer/denom, t)
++    with t.remove_assumptions():
++        part = apart(numer/denom, t)
+     args = Add.make_args(part)
+     monomials = []
+     terms = {}
++
+     for arg in args:
+         numer, denom = arg.as_numer_denom()
+         if not denom.has(t):

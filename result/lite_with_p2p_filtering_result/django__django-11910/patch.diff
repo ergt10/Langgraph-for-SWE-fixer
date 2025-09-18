@@ -1,0 +1,18 @@
+
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index a09f791..f065f87 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -946,10 +946,11 @@ class ForeignKey(ForeignObject):
+ 
+     def contribute_to_related_class(self, cls, related):
+         super().contribute_to_related_class(cls, related)
+-        if self.remote_field.field_name is None:
++        if self.remote_field.field_name in (None, ''):
+             self.remote_field.field_name = cls._meta.pk.name
+ 
+     def formfield(self, *, using=None, **kwargs):
++
+         if isinstance(self.remote_field.model, str):
+             raise ValueError("Cannot create form field for %r yet, because "
+                              "its related model %r has not been loaded yet" %

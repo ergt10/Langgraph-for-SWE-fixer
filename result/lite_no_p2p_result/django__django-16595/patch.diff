@@ -1,0 +1,29 @@
+
+diff --git a/django/db/migrations/operations/fields.py b/django/db/migrations/operations/fields.py
+index d35a2ee..8d21ac7 100644
+--- a/django/db/migrations/operations/fields.py
++++ b/django/db/migrations/operations/fields.py
+@@ -264,9 +264,23 @@ class AlterField(FieldOperation):
+                     field=self.field,
+                 ),
+             ]
++        elif (
++            isinstance(operation, AlterField)
++            and self.is_same_field_operation(operation)
++        ):
++            return [
++                AlterField(
++                    model_name=self.model_name,
++                    name=self.name,
++                    field=operation.field,
++                ),
++            ]
+         return super().reduce(operation, app_label)
+ 
+ 
++
++
++
+ class RenameField(FieldOperation):
+     """Rename a field on the model. Might affect db_column too."""
+ 

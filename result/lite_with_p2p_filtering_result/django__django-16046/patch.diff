@@ -1,0 +1,25 @@
+
+diff --git a/django/contrib/admin/options.py b/django/contrib/admin/options.py
+index 638ee01..1a1ef8e 100644
+--- a/django/contrib/admin/options.py
++++ b/django/contrib/admin/options.py
+@@ -1070,14 +1070,15 @@ class ModelAdmin(BaseModelAdmin):
+         on the changelist. The list_display parameter is the list of fields
+         returned by get_list_display().
+         """
++        if self.list_display_links is not None and not list_display:
++            return self.list_display_links
+         if (
+-            self.list_display_links
+-            or self.list_display_links is None
++            self.list_display_links is None
++            or not self.list_display_links
+             or not list_display
+         ):
+-            return self.list_display_links
+-        else:
+             # Use only the first item in list_display as link
++
+             return list(list_display)[:1]
+ 
+     def get_list_filter(self, request):

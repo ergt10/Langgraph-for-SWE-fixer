@@ -1,0 +1,19 @@
+
+diff --git a/lib/mpl_toolkits/mplot3d/art3d.py b/lib/mpl_toolkits/mplot3d/art3d.py
+index fa869c7..4162d7a 100644
+--- a/lib/mpl_toolkits/mplot3d/art3d.py
++++ b/lib/mpl_toolkits/mplot3d/art3d.py
+@@ -193,11 +193,12 @@ class Line3D(lines.Line2D):
+         Accepts x, y, z arguments or a single array-like (x, y, z)
+         """
+         if len(args) == 1:
+-            self._verts3d = args[0]
++            self._verts3d = tuple(args[0])
+         else:
+             self._verts3d = args
+         self.stale = True
+ 
++
+     def get_data_3d(self):
+         """
+         Get the current data

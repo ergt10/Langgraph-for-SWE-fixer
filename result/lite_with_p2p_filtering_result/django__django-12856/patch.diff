@@ -1,0 +1,38 @@
+
+diff --git a/django/db/models/constraints.py b/django/db/models/constraints.py
+index 714e891..f629a76 100644
+--- a/django/db/models/constraints.py
++++ b/django/db/models/constraints.py
+@@ -1,8 +1,11 @@
+ from enum import Enum
+ 
++from django.core.exceptions import ValidationError
+ from django.db.models.query_utils import Q
+ from django.db.models.sql.query import Query
+ 
++
++
+ __all__ = ['CheckConstraint', 'Deferrable', 'UniqueConstraint']
+ 
+ 
+
+diff --git a/django/db/models/constraints.py b/django/db/models/constraints.py
+index 714e891..0cdbf39 100644
+--- a/django/db/models/constraints.py
++++ b/django/db/models/constraints.py
+@@ -150,4 +150,14 @@ class UniqueConstraint(BaseConstraint):
+             kwargs['condition'] = self.condition
+         if self.deferrable:
+             kwargs['deferrable'] = self.deferrable
+-        return path, args, kwargs
++
++        return path, args, kwargs
++
++    def check(self, model):
++        for field_name in self.fields:
++            if not model._meta.get_field(field_name):
++                raise ValidationError(
++                    'Field "%(field_name)s" does not exist on model "%(model)s".',
++                    code='field_does_not_exist',
++                    params={'field_name': field_name, 'model': model._meta.label},
++                )

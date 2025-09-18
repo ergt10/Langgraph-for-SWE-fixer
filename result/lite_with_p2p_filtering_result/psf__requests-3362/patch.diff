@@ -1,0 +1,41 @@
+
+diff --git a/requests/models.py b/requests/models.py
+index 58593f5..0d54c31 100644
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -674,11 +674,13 @@ class Response(object):
+                 except ReadTimeoutError as e:
+                     raise ConnectionError(e)
+             else:
+-                # Standard file-like object.
++                # Standard file-like object. Decode each chunk as it is read.
+                 while True:
+                     chunk = self.raw.read(chunk_size)
+                     if not chunk:
+                         break
++                    if decode_unicode:
++                        chunk = stream_decode_response_unicode([chunk], self)
+                     yield chunk
+ 
+             self._content_consumed = True
+@@ -690,15 +692,17 @@ class Response(object):
+         # simulate reading small chunks of the content
+         reused_chunks = iter_slices(self._content, chunk_size)
+ 
++        if decode_unicode:
++            reused_chunks = stream_decode_response_unicode(reused_chunks, self)
++
+         stream_chunks = generate()
+ 
+         chunks = reused_chunks if self._content_consumed else stream_chunks
+ 
+-        if decode_unicode:
+-            chunks = stream_decode_response_unicode(chunks, self)
+-
+         return chunks
+ 
++
++
+     def iter_lines(self, chunk_size=ITER_CHUNK_SIZE, decode_unicode=None, delimiter=None):
+         """Iterates over the response data, one line at a time.  When
+         stream=True is set on the request, this avoids reading the

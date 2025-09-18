@@ -1,0 +1,35 @@
+
+diff --git a/django/db/migrations/serializer.py b/django/db/migrations/serializer.py
+index cdbac1f..c8cd655 100644
+--- a/django/db/migrations/serializer.py
++++ b/django/db/migrations/serializer.py
+@@ -125,13 +125,26 @@ class EnumSerializer(BaseSerializer):
+     def serialize(self):
+         enum_class = self.value.__class__
+         module = enum_class.__module__
+-        return (
+-            "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
+-            {"import %s" % module},
++        if hasattr(self.value, "name"):
++            return (
++                "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
++                {"import %s" % module},
++            )
++        # If the enum has no name, it is a combination of flags.
++        # We decompose it into its components and generate an expression
++        # that ORs them together.
++        enum_value = self.value.value
++        flags = enum_class._decompose(enum_value)
++        flag_names = [f.name for f in flags]
++        flags_string = " | ".join(
++            "%s.%s[%r]" % (module, enum_class.__qualname__, name)
++            for name in flag_names
+         )
++        return flags_string, {"import %s" % module}
+ 
+ 
+ class FloatSerializer(BaseSimpleSerializer):
++
+     def serialize(self):
+         if math.isnan(self.value) or math.isinf(self.value):
+             return 'float("{}")'.format(self.value), set()

@@ -1,0 +1,56 @@
+
+diff --git a/sklearn/neighbors/base.py b/sklearn/neighbors/base.py
+index 01d85d0..405db2d 100644
+--- a/sklearn/neighbors/base.py
++++ b/sklearn/neighbors/base.py
+@@ -9,9 +9,12 @@
+ import warnings
+ from abc import ABCMeta, abstractmethod
+ 
++import numbers
+ import numpy as np
+ from scipy.sparse import csr_matrix, issparse
+ 
++
++
+ from .ball_tree import BallTree
+ from .kd_tree import KDTree
+ from ..base import BaseEstimator
+
+diff --git a/sklearn/neighbors/base.py b/sklearn/neighbors/base.py
+index 01d85d0..036d4eb 100644
+--- a/sklearn/neighbors/base.py
++++ b/sklearn/neighbors/base.py
+@@ -253,9 +253,13 @@ class NeighborsBase(six.with_metaclass(ABCMeta, BaseEstimator)):
+                              % self.algorithm)
+ 
+         if self.n_neighbors is not None:
++            if not isinstance(self.n_neighbors, numbers.Integral):
++                raise TypeError("n_neighbors must be an integer")
++
+             if self.n_neighbors <= 0:
+                 raise ValueError(
+                     "Expected n_neighbors > 0. Got %d" %
++
+                     self.n_neighbors
+                 )
+ 
+
+diff --git a/sklearn/neighbors/base.py b/sklearn/neighbors/base.py
+index 01d85d0..bbc7e3d 100644
+--- a/sklearn/neighbors/base.py
++++ b/sklearn/neighbors/base.py
+@@ -328,9 +328,13 @@ class KNeighborsMixin(object):
+         if n_neighbors is None:
+             n_neighbors = self.n_neighbors
+ 
++        if not isinstance(n_neighbors, numbers.Integral):
++            raise TypeError("n_neighbors must be an integer")
++
+         if X is not None:
+             query_is_train = False
+             X = check_array(X, accept_sparse='csr')
++
+         else:
+             query_is_train = True
+             X = self._fit_X

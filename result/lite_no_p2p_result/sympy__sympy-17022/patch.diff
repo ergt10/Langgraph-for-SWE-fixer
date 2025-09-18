@@ -1,0 +1,24 @@
+
+diff --git a/sympy/utilities/lambdify.py b/sympy/utilities/lambdify.py
+index 1a97f12..8a77fbb 100644
+--- a/sympy/utilities/lambdify.py
++++ b/sympy/utilities/lambdify.py
+@@ -707,11 +707,18 @@ def lambdify(args, expr, modules=None, printer=None, use_imps=True,
+             from sympy.printing.pycode import MpmathPrinter as Printer
+         elif _module_present('scipy', namespaces):
+             from sympy.printing.pycode import SciPyPrinter as Printer
++            class SciPyPrinter(SciPyPrinter):
++                def _print_Identity(self, expr):
++                    return 'scipy.sparse.eye(%s)' % expr.shape[0]
+         elif _module_present('numpy', namespaces):
+             from sympy.printing.pycode import NumPyPrinter as Printer
++            class NumPyPrinter(NumPyPrinter):
++                def _print_Identity(self, expr):
++                    return 'numpy.eye(%s)' % expr.shape[0]
+         elif _module_present('numexpr', namespaces):
+             from sympy.printing.lambdarepr import NumExprPrinter as Printer
+         elif _module_present('tensorflow', namespaces):
++
+             from sympy.printing.tensorflow import TensorflowPrinter as Printer
+         elif _module_present('sympy', namespaces):
+             from sympy.printing.pycode import SymPyPrinter as Printer

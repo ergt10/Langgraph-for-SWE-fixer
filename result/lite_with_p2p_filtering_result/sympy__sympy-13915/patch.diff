@@ -1,0 +1,19 @@
+
+diff --git a/sympy/core/expr.py b/sympy/core/expr.py
+index 8b01d4f..8ecb225 100644
+--- a/sympy/core/expr.py
++++ b/sympy/core/expr.py
+@@ -1670,9 +1670,13 @@ class Expr(Basic, EvalfMixin):
+         if self.is_zero:
+             return S.Zero, S.Zero
+ 
++        if self is S.NaN:
++            return want.identity, want.identity
++
+         func = self.func
+         if hint.get('as_Add', isinstance(self, Add) ):
+             want = Add
++
+         else:
+             want = Mul
+ 
